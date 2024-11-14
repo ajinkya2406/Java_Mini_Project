@@ -63,6 +63,23 @@ public class AccountManager {
     }
 
     public void getBalance(long account_number){
+        scanner.nextLine();
+        System.out.print("Enter Security Pin: ");
+        String security_pin = scanner.nextLine();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT balance FROM Accounts WHERE account_number = ? AND security_pin = ?");
+            preparedStatement.setLong(1, account_number);
+            preparedStatement.setString(2, security_pin);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                double balance = resultSet.getDouble("balance");
+                System.out.println("Balance: "+balance);
+            }else{
+                System.out.println("Invalid Pin!");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
 }

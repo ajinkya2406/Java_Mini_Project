@@ -101,6 +101,22 @@ public class AccountManager {
     }
 
     public void transfer_money(long sender_account_number) throws SQLException {
+        scanner.nextLine();
+        System.out.print("Enter Receiver Account Number: ");
+        long receiver_account_number = scanner.nextLong();
+        System.out.print("Enter Amount: ");
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+        System.out.print("Enter Security Pin: ");
+        String security_pin = scanner.nextLine();
+        try{
+           connection.setAutoCommit(false);
+            if(sender_account_number!=0 && receiver_account_number!=0){
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Accounts WHERE account_number = ? AND security_pin = ? ");
+                preparedStatement.setLong(1, sender_account_number);
+                preparedStatement.setString(2, security_pin);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
 
     }
 

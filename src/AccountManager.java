@@ -97,7 +97,7 @@ public class AccountManager {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        connection.setAutoCommit(true);
+
     }
 
     public void transfer_money(long sender_account_number) throws SQLException {

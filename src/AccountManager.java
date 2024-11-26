@@ -117,7 +117,49 @@ public class AccountManager {
                 preparedStatement.setString(2, security_pin);
                 ResultSet resultSet = preparedStatement.executeQuery();
 
+                if (resultSet.next()) {
+                    double current_balance = resultSet.getDouble("balance");
+                    if (amount<=current_balance){
 
+                        // Write debit and credit queries
+                        String debit_query = "UPDATE Accounts SET balance = balance - ? WHERE account_number = ?";
+                        String credit_query = "UPDATE Accounts SET balance = balance + ? WHERE account_number = ?";
+
+                        // Debit and Credit prepared Statements
+                        PreparedStatement creditPreparedStatement = connection.prepareStatement(credit_query);
+                        PreparedStatement debitPreparedStatement = connection.prepareStatement(debit_query);
+
+                        // Set Values for debit and credit prepared statements
+                        creditPreparedStatement.setDouble(1, amount);
+                        creditPreparedStatement.setLong(2, receiver_account_number);
+                        debitPreparedStatement.setDouble(1, amount);
+                        debitPreparedStatement.setLong(2, sender_account_number);
+                        int rowsAffected1 = debitPreparedStatement.executeUpdate();
+                        int rowsAffected2 = creditPreparedStatement.executeUpdate();
+                        if (rowsAffected1 > 0 && rowsAffected2 > 0) {
+                            System.out.println("Transaction Successful!");
+                            System.out.println("Rs."+amount+" Transferred Successfully");
+                            connection.commit();
+                            connection.setAutoCommit(true);
+                            return;
+                        } else {
+                            System.out.println("Transaction Failed");
+                            connection.rollback();
+                            connection.setAutoCommit(true);
+                        }
+                    }else{
+                        System.out.println("Insufficient Balance!");
+                    }
+                }else{
+                    System.out.println("Invalid Security Pin!");
+                }
+            }else{
+                System.out.println("Invalid account number");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        connection.setAutoCommit(true);
     }
 
     public void getBalance(long account_number){
